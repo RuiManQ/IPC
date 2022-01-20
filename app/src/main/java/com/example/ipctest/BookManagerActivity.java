@@ -89,10 +89,5 @@ public class BookManagerActivity extends AppCompatActivity {
             mHandler.obtainMessage(MyConstants.MSG_NEW_BOOK_ARRIVED,newBook).sendToTarget();
         }
     };
-    private IOnNewBookArrivedListener mOnNewBookArrivedListener2 = new IOnNewBookArrivedListener.Stub() {
-        @Override
-        public void onNewBookArrived(Book newBook) throws RemoteException {
-            mHandler.obtainMessage(MyConstants.MSG_NEW_BOOK_ARRIVED,newBook).sendToTarget();
-        }
-    };
+
 }
