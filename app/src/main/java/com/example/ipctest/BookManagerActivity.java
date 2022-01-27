@@ -14,16 +14,20 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Button;
 
 import java.util.List;
 
 public class BookManagerActivity extends AppCompatActivity {
     private IBookManager remoteBookManager;
     private static final String TAG = "qiruimin";
+    private Button stopBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_manager);
+        stopBtn = findViewById(R.id.button2);
+        stopBtn.setOnClickListener(v -> stopObserver());
         Intent intent = new Intent(this,BookManagerService.class);
         bindService(intent,mServiceConnection, Context.BIND_AUTO_CREATE);
     }
@@ -48,7 +52,6 @@ public class BookManagerActivity extends AppCompatActivity {
             IBookManager bookManager = IBookManager.Stub.asInterface(service);
             try {
                 remoteBookManager = bookManager;
-                List<Book> list = bookManager.getBookList();
                 bookManager.addBook(new Book(3,"计算机网络"));
                 bookManager.registerListener(mOnNewBookArrivedListener1);
             } catch (RemoteException e) {
@@ -79,15 +82,32 @@ public class BookManagerActivity extends AppCompatActivity {
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+            unbindService(mServiceConnection);
 
         }
         super.onDestroy();
     }
     private IOnNewBookArrivedListener mOnNewBookArrivedListener1 = new IOnNewBookArrivedListener.Stub() {
         @Override
+        public int getListenerId() throws RemoteException {
+            return mOnNewBookArrivedListener1.hashCode();
+        }
+
+        @Override
         public void onNewBookArrived(Book newBook) throws RemoteException {
             mHandler.obtainMessage(MyConstants.MSG_NEW_BOOK_ARRIVED,newBook).sendToTarget();
         }
     };
 
+    private void stopObserver(){
+        Log.e(TAG, "stopConnection: " );
+//        stopService(new Intent(this,BookManagerService.class));
+//        try {
+//            unbindService(mServiceConnection);
+//        }catch (Exception e){
+//            Log.e(TAG, "Exception e" );
+//        }
+
+//        stopService(new Intent(this,BookManagerService.class));
+    }
 }

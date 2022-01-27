@@ -9,7 +9,6 @@ import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BookManagerService extends Service {
     public BookManagerService() {
@@ -18,6 +17,7 @@ public class BookManagerService extends Service {
     private Boolean mIsServiceDestroyed = false;
     private CopyOnWriteArrayList<Book> mBookList = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<IOnNewBookArrivedListener> mListenerList = new CopyOnWriteArrayList<>();
+    private Thread mNewBookThread;
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
@@ -37,23 +37,27 @@ public class BookManagerService extends Service {
 
         @Override
         public void registerListener(IOnNewBookArrivedListener listener) throws RemoteException {
-            if(!mListenerList.contains(listener)){
-                Log.e(TAG, "registerListener: "+mListenerList.size());
-                mListenerList.add(listener);
-            }else{
-                Log.e(TAG, "listener already exist! ");
+            for (int i = 0; i < mListenerList.size(); i++) {
+                if (mListenerList.get(i).getListenerId() == listener.getListenerId()) {
+                    Log.e(TAG, "listener already exist! ");
+                    return;
+                }
             }
-
+            mListenerList.add(listener);
+            Log.e(TAG, "registerListener: "+mListenerList.size());
         }
 
         @Override
         public void unregisterListener(IOnNewBookArrivedListener listener) throws RemoteException {
-            if(mListenerList.contains(listener)){
-                mListenerList.remove(listener);
-                Log.e(TAG, "unregisterListener:Success " );
-            }else{
-                Log.e(TAG, "listener not found! ");
+            for(int i=0;i<mListenerList.size();i++){
+                if(mListenerList.get(i).getListenerId() == listener.getListenerId()){
+                    IOnNewBookArrivedListener tempListen = mListenerList.get(i);
+                    mListenerList.remove(tempListen);
+                    Log.e(TAG, "unregisterListener:Success "+mListenerList.size() );
+                    return;
+                }
             }
+            Log.e(TAG, "listener not found! ");
         }
     };
 
@@ -62,7 +66,8 @@ public class BookManagerService extends Service {
         super.onCreate();
         mBookList.add(new Book(1,"数据结构"));
         mBookList.add(new Book(2,"操作系统"));
-        new Thread(new ServiceWorker()).start();
+        mNewBookThread = new Thread(new ServiceWorker());
+        mNewBookThread.start();
     }
     private class ServiceWorker implements Runnable {
 
@@ -94,7 +99,17 @@ public class BookManagerService extends Service {
             Log.d(TAG, "Notify NewBookArrived ");
             listener.onNewBookArrived(newBook);
         }
+    }
 
-
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.e(TAG, "MyService.onUnbind");
+        return super.onUnbind(intent);
+    }
+    @Override
+    public void onDestroy() {
+        Log.e(TAG, "MyService.onDestroy");
+        mNewBookThread.stop();
+        super.onDestroy();
     }
 }

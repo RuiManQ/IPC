@@ -43,4 +43,17 @@ public class Book implements Parcelable {
             return new Book[size];
         }
     };
+
+    @Override
+    public int hashCode() {
+        return bookId + bookName.hashCode();
+    }
+    public Boolean equals(Book book1,Book book2){
+        if(book1.bookName == book2.bookName&&book1.bookId==book2.bookId){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }

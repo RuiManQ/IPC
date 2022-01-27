@@ -82,6 +82,6 @@ public class MainActivity extends AppCompatActivity {
         intent.setPackage("com.finshell.wallet");
         intent.putExtra("type",10);
         sendBroadcast(intent);
-        Log.e("qiruimin", "gotowallet: ");
+        Log.e("qiruimin", "send broadcast to wallet: ");
     }
 }
