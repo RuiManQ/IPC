@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.util.List;
@@ -26,12 +27,13 @@ public class BookManagerService extends Service {
 
     private Binder mBinder = new IBookManager.Stub() {
         @Override
-        public List<Book> getBookList() throws RemoteException {
+        public List<Book> getBookList() {
+            SystemClock.sleep(6000);
             return mBookList;
         }
 
         @Override
-        public void addBook(Book book) throws RemoteException {
+        public void addBook(Book book) {
             mBookList.add(book);
         }
 

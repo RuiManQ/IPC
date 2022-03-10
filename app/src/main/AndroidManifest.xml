@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.ipctest" >
-
+    package="com.example.ipctest"
+    xmlns:tools="http://schemas.android.com/tools">
+<!--    <uses-permission-->
+<!--        android:name="android.permission.QUERY_ALL_PACKAGES" />-->
+    <uses-permission android:name="com.example.testplugin.MyPluginProvider"/>
+    <queries>
+        <provider android:authorities="com.example.testplugin" />
+    </queries>>
+    <queries>
+       <package android:name="com.oplus.digitalkey"/>
+    </queries>>
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -9,7 +18,19 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.IPCTest" >
+        android:theme="@style/Theme.IPCTest">
+
+        <activity
+            android:name="com.example.providerTest.ProviderActivity"
+            android:exported="true" />
+
+        <provider
+            android:name="com.example.providerTest.BookProvider"
+            android:authorities="com.ipctest.book"
+            android:enabled="true"
+            android:exported="true"
+            />
+
         <activity
             android:name=".BookManagerActivity"
             android:configChanges="orientation"
@@ -18,9 +39,8 @@
         <service
             android:name=".BookManagerService"
             android:enabled="true"
-            android:process=":remote"
             android:exported="true"
-             />
+            android:process=":remote" />
         <service
             android:name=".MessengerService"
             android:enabled="true"
@@ -29,7 +49,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true" >
+            android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

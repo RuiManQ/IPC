@@ -21,7 +21,7 @@ public class MyApplication extends Application {
         if(AppUtils.isMainProcess(context)){
             Log.e("qiruimin", "onCreate: 主进程" );
         }else{
-            Log.e("qiruimin", "onCreate: 非主进程" );
+            Log.e("qiruimin", "onCreate: 非主进程 :" +context.getApplicationInfo().processName);
         }
     }
 }
